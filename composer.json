@@ -1,0 +1,6 @@
+{
+    "name": "pedrotroller/http-markup",
+    "require": {
+        "silex/silex": "^2.0"
+    }
+}

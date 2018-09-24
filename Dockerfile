@@ -1,15 +1,27 @@
-FROM php:7.1.1-apache
+FROM php:7.2-apache
 
 RUN apt-get update && \
-    apt-get install ruby ruby-dev git -y && \
-    gem install github-markup redcarpet RedCloth org-ruby creole asciidoctor && \
+    apt-get install -y --no-install-recommends \
+    git \
+    ruby \
+    ruby-dev \
+    unzip && \
     rm -rf /var/lib/apt/lists/*
+
+RUN gem install \
+    RedCloth  \
+    asciidoctor  \
+    creole  \
+    github-markup  \
+    org-ruby  \
+    rdoc \
+    redcarpet
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN composer global require hirak/prestissimo
 
 COPY composer.* /var/www/html/
 
-RUN curl -sS https://getcomposer.org/installer | php && \
-    php composer.phar install --prefer-dist --optimize-autoloader && \
-    rm composer.phar
+RUN composer install --no-scripts --no-dev
 
 COPY . /var/www/html
-

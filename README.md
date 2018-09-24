@@ -10,6 +10,11 @@ There is only one end point to this api matching on `POST /`
 
 You just have to post your markdown inside the body of your request and to add to set the Content-Type. For the moment, only `text/markdown` is supported.
 
+Supported formats
+=================
+
+This application supports all formats suported by [Github markup](https://github.com/github/markup#markups) (except the .pod one).
+
 Example
 =======
 
@@ -30,5 +35,5 @@ will return
 ```html
 <h1>The title</h1>
 
-<h2>The subtitle</h2>
+<h1>The subtitle</h1>
 ```

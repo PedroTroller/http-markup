@@ -43,12 +43,14 @@ $getExtensionFromRequest = function (Symfony\Component\HttpFoundation\Request $r
 $app = new Silex\Application();
 
 $app->post('/', function (Symfony\Component\HttpFoundation\Request $request) use ($getExtensionFromRequest) {
-    $file = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $getExtensionFromRequest($request));
+    $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $getExtensionFromRequest($request));
+    $input = $request->getContent(true);
+    $storage = fopen($temporaryFile, 'wb');
 
-    file_put_contents($file, $request->getContent());
+    stream_copy_to_stream($input, $storage);
 
-    $response = new Symfony\Component\HttpFoundation\StreamedResponse(function () use ($file): void {
-        $cmd = sprintf('github-markup %s', $file);
+    $response = new Symfony\Component\HttpFoundation\StreamedResponse(function () use ($temporaryFile): void {
+        $cmd = sprintf('github-markup %s', $temporaryFile);
 
         $descriptorspec = [
             0 => ['pipe', 'r'],
@@ -67,7 +69,7 @@ $app->post('/', function (Symfony\Component\HttpFoundation\Request $request) use
             }
         }
 
-        unlink($file);
+        unlink($temporaryFile);
     }, 200, ['Content-Type' => 'text/html']);
 
     return $response;

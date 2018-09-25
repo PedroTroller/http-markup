@@ -1,10 +1,7 @@
+---
 version: '2'
 
 services:
-    php:
-        build: .
-        volumes:
-            - '.:/var/www/html/'
-        ports:
-            - '80:80'
-
+  http-markup:
+    build: .
+    image: pedrotroller/http-markup

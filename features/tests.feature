@@ -12,7 +12,6 @@ Feature: Parse markup file and transform them
     <h1>The title</h1>
 
     <h2>The subtitle</h2>
-
     """
 
   Scenario Outline: Parse textile format
@@ -65,7 +64,6 @@ Feature: Parse markup file and transform them
 
     <p># Foo. # # @example # #   y #   g # # @param [String] param_name The xx and
     xx. # # @see <a href="http://url.com">url.com</a> # # @return [true] if so</p>
-
     """
 
   Scenario Outline: Parse org mode format
@@ -82,10 +80,46 @@ Feature: Parse markup file and transform them
     <h1>Test Agenda</h1>
     <p>&lt;2017-03-10 Fri&gt;</p>
     <h1>test agenda</h1>
-
     """
 
     Examples:
       | mime type    |
       | text/orgmode |
       | text/org     |
+
+  Scenario Outline: Parse rst format
+    When I send a markup file with content type "<mime type>" containing
+    """
+    To localize a postal address, a minimum set of properties are required :
+
+     - ``streetAddress``
+     - ``addressLocality``
+     - ``postalCode``
+     - ``addressCountry``
+
+    If at least one of these properties is not available, then the ``address`` attribute is mandatory.
+
+    Without this kind of informations, then a ``PostalAddress`` is useless.
+
+    The ``name`` property of a ``PostalAddress`` is optionnal.
+    """
+    Then I should get the following html
+    """
+    <p>To localize a postal address, a minimum set of properties are required :</p>
+    <blockquote>
+    <ul class="simple">
+    <li><code>streetAddress</code></li>
+    <li><code>addressLocality</code></li>
+    <li><code>postalCode</code></li>
+    <li><code>addressCountry</code></li>
+    </ul>
+    </blockquote>
+    <p>If at least one of these properties is not available, then the <code>address</code> attribute is mandatory.</p>
+    <p>Without this kind of informations, then a <code>PostalAddress</code> is useless.</p>
+    <p>The <code>name</code> property of a <code>PostalAddress</code> is optionnal.</p>
+    """
+
+    Examples:
+      | mime type             |
+      | text/rst              |
+      | text/restructuredtext |

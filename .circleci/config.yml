@@ -1,0 +1,29 @@
+---
+version: 2
+
+jobs:
+  fonctionnal:
+    docker:
+      - image: docker/compose:1.22.0
+    environment:
+      COMPOSE_FILE: docker-compose.yml
+    steps:
+      - checkout
+      - setup-docker-engine
+      - type: shell
+        name: Build and run docker container
+        command: |
+          docker-compose pull
+          docker-compose build
+          docker-compose up -d
+      - type: shell
+        name: Run tests
+        command: |
+          docker-compose exec http-markup composer install
+          docker-compose exec http-markup vendor/bin/behat
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - fonctionnal

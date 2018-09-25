@@ -81,6 +81,7 @@ final class FeatureContext implements Context
     private function cleanupHtml(string $html): string
     {
         $html = str_replace("\t", '', $html);
+        $html = trim($html, " \n");
 
         return $html;
     }

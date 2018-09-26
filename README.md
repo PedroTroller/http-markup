@@ -13,7 +13,7 @@ You just have to post your markdown inside the body of your request and to add t
 Supported formats
 =================
 
-This application supports all formats suported by [Github markup](https://github.com/github/markup#markups) (except the .pod one).
+This application supports all formats suported by [Github markup](https://github.com/github/markup#markups).
 
 Example
 =======

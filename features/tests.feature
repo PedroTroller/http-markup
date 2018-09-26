@@ -6,12 +6,25 @@ Feature: Parse markup file and transform them
     # The title
 
     ## The subtitle
+
+    ```yaml
+    {
+        "require": {
+            "knplabs/dictionary-bundle": "~2.0"
+        }
+    }
+    ```
     """
     Then I should get the following html
     """
     <h1>The title</h1>
-
     <h2>The subtitle</h2>
+    <pre lang="yaml"><code>{
+        &quot;require&quot;: {
+            &quot;knplabs/dictionary-bundle&quot;: &quot;~2.0&quot;
+        }
+    }
+    </code></pre>
     """
 
   Scenario Outline: Parse textile format

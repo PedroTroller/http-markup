@@ -3,4 +3,4 @@ default:
         default:
             contexts:
                 - FeatureContext:
-                    host: "http://localhost:8899/"
+                    host: "http://localhost/"

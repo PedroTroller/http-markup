@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Component\Process\Process;
+
 require_once __DIR__.'/vendor/autoload.php';
 
-$getExtensionFromRequest = function (Symfony\Component\HttpFoundation\Request $request): string {
-    $type = $request->headers->get('Content-Type');
+$getExtensionFromRequest = function (Request $request): string {
+    $type = $request->getHeader('Content-Type');
 
     if (empty($type)) {
         throw new Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException(
@@ -40,39 +44,22 @@ $getExtensionFromRequest = function (Symfony\Component\HttpFoundation\Request $r
     return $formats[$type];
 };
 
-$app = new Silex\Application();
+$app = new \Slim\App();
 
-$app->post('/', function (Symfony\Component\HttpFoundation\Request $request) use ($getExtensionFromRequest) {
+$app->post('/', function (Request $request, Response $response, array $args) use ($getExtensionFromRequest): void {
     $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $getExtensionFromRequest($request));
-    $input = $request->getContent(true);
-    $storage = fopen($temporaryFile, 'wb');
+    $input = (string) $request->getBody();
+    $input = str_replace("\xc2\xa0", ' ', $input);
 
-    stream_copy_to_stream($input, $storage);
+    file_put_contents($temporaryFile, $input);
 
-    $response = new Symfony\Component\HttpFoundation\StreamedResponse(function () use ($temporaryFile): void {
-        $cmd = sprintf('github-markup %s', $temporaryFile);
+    $process = new Process(['github-markup', $temporaryFile]);
 
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
+    $process->run(function (string $type, string $message) use ($response): void {
+        $response->getBody()->write($message);
+    });
 
-        flush();
-
-        $process = proc_open($cmd, $descriptorspec, $pipes, __DIR__, []);
-
-        if (is_resource($process)) {
-            while ($s = fgets($pipes[1])) {
-                echo $s;
-                flush();
-            }
-        }
-
-        unlink($temporaryFile);
-    }, 200, ['Content-Type' => 'text/html']);
-
-    return $response;
+    $response->withStatus($process->isSuccessful() ? 200 : 500);
 });
 
 $app->run();

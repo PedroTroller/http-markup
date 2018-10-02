@@ -49,7 +49,6 @@ $app = new \Slim\App();
 $app->post('/', function (Request $request, Response $response, array $args) use ($getExtensionFromRequest): void {
     $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $getExtensionFromRequest($request));
     $input = (string) $request->getBody();
-    $input = str_replace("\xc2\xa0", ' ', $input);
 
     file_put_contents($temporaryFile, $input);
 

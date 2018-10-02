@@ -11,8 +11,15 @@ RUN apt-get update && \
     python-pip \
     ruby-dev \
     unzip \
+    locales \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
+    locale-gen && \
+    locale -a
+
+ENV LANG=en_US.UTF-8
 
 RUN pip install docutils==0.14
 

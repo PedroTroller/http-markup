@@ -61,4 +61,8 @@ $app->post('/', function (Request $request, Response $response, array $args) use
     $response->withStatus($process->isSuccessful() ? 200 : 500);
 });
 
+$app->get('/_ping', function (Request $request, Response $response, array $args): void {
+  $response->withStatus(200);
+});
+
 $app->run();

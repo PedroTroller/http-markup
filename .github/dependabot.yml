@@ -1,0 +1,29 @@
+---
+version: 2
+
+updates:
+  - package-ecosystem: bundler
+    directory: '/'
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: fix
+  - package-ecosystem: composer
+    directory: '/'
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: fix
+      prefix-development: test
+  - package-ecosystem: docker
+    directory: '/'
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: fix
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: build

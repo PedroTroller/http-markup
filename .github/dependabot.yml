@@ -8,6 +8,7 @@ updates:
       interval: "daily"
     commit-message:
       prefix: fix
+    target-branch: beta
   - package-ecosystem: composer
     directory: '/'
     schedule:
@@ -15,15 +16,18 @@ updates:
     commit-message:
       prefix: fix
       prefix-development: test
+    target-branch: beta
   - package-ecosystem: docker
     directory: '/'
     schedule:
       interval: "daily"
     commit-message:
       prefix: fix
+    target-branch: beta
   - package-ecosystem: npm
     directory: '/'
     schedule:
       interval: "daily"
     commit-message:
       prefix: build
+    target-branch: beta

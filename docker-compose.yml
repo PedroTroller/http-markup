@@ -1,7 +1,16 @@
 ---
-version: '2'
+version: '3.8'
 
 services:
-  http-markup:
-    build: .
+  prod:
+    build: 
+      context: .
+      target: prod
     image: pedrotroller/http-markup
+
+  dev:
+    build: 
+      context: .
+      target: dev
+    volumes:
+      - '.:/var/www/html/'

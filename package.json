@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "semantic-release": "^17.2.0",
+    "semantic-release-docker": "^2.2.0"
+  }
+}

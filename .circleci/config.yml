@@ -1,29 +1,80 @@
 ---
-version: 2
+version: 2.1
+
+executor: machine
+
+orbs:
+  docker: circleci/docker@1.5.0
+  node: circleci/node@4.1.0
 
 jobs:
-  fonctionnal:
-    docker:
-      - image: docker/compose:1.22.0
-    environment:
-      COMPOSE_FILE: docker-compose.yml
+  tests:
+    machine:
+      docker_layer_caching: false
     steps:
       - checkout
-      - setup-docker-engine
-      - type: shell
-        name: Build and run docker container
-        command: |
-          docker-compose pull
-          docker-compose build
-          docker-compose up -d
-      - type: shell
-        name: Run tests
-        command: |
-          docker-compose exec http-markup composer install
-          docker-compose exec http-markup vendor/bin/behat
+      - docker/install-docker
+      - docker/install-docker-compose
+      - run: |
+          docker-compose pull dev
+          docker-compose build dev
+          docker-compose up --detach dev
+      - run: |
+          docker-compose exec dev composer install
+          docker-compose exec dev vendor/bin/behat
+
+  release-test:
+    machine:
+      docker_layer_caching: false
+    steps:
+      - run: |
+          echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+          echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+      - checkout
+      - docker/install-docker
+      - docker/install-docker-compose
+      - docker/check
+      - run: |
+          docker-compose pull prod
+          docker-compose build prod
+          docker-compose up --detach prod
+      - run: |
+          nvm install 15.0.1
+          npm install
+          node_modules/.bin/semantic-release --dry-run
+
+  release:
+    machine:
+      docker_layer_caching: false
+    steps:
+      - run: |
+          echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+          echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+      - checkout
+      - docker/install-docker
+      - docker/install-docker-compose
+      - docker/check
+      - run: |
+          docker-compose pull prod
+          docker-compose build prod
+          docker-compose up --detach prod
+      - run: |
+          nvm install 15.0.1
+          npm install
+          node_modules/.bin/semantic-release
+
 
 workflows:
   version: 2
   workflow:
     jobs:
-      - fonctionnal
+      - tests
+      - release-test
+      - release:
+          requires:
+            - tests
+            - release-test
+          filters:
+            branches:
+              only:
+                - main

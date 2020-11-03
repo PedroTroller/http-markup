@@ -1,0 +1,12 @@
+---
+branches:
+  - main
+plugins:
+  -
+    - '@semantic-release/commit-analyzer'
+    - preset: conventionnalcommit
+  - '@semantic-release/release-notes-generator'
+  - '@semantic-release/github'
+  -
+    - semantic-release-docker
+    - name: pedrotroller/http-markup

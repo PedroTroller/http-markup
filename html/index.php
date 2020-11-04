@@ -9,7 +9,7 @@ use Slim\App;
 use React\Promise\Deferred;
 use React\Promise\Promise;
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 $app = new App();
 

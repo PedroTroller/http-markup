@@ -1,5 +1,5 @@
 ---
-titleAndCommits: true
+commitsOnly: true
 
 types:
   - build

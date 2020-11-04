@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Psr\Http\Message\ResponseInterface;
 use SebastianBergmann\Diff\Differ;
 use Webmozart\Assert\Assert;
 
 final class FeatureContext implements Context
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var \GuzzleHttp\Psr7\Response|null
-     */
-    private $response;
+    private ?ResponseInterface $response;
 
     public function __construct(string $host)
     {
@@ -38,6 +36,7 @@ final class FeatureContext implements Context
      */
     public function iSendAMarkupFileWithContentTypeContaining(string $mimeType, PyStringNode $body): void
     {
+        try {
         $this->response = $this->client->request(
             'POST',
             '/',
@@ -50,6 +49,9 @@ final class FeatureContext implements Context
                 'body' => (string) $body,
             ]
         );
+        } catch (RequestException $requestException) {
+            $this->response = $requestException->getResponse();
+        }
     }
 
     /**
@@ -76,5 +78,17 @@ final class FeatureContext implements Context
 
             throw $exception;
         }
+    }
+
+    /**
+     * @Then I should get an unexpected media type http response
+     */
+    public function iShouldGetAnUnexpectedMediaTypeHttpResponse(): void
+    {
+        if (null === $this->response) {
+            throw new Exception('No request sent.');
+        }
+
+        Assert::eq($this->response->getStatusCode(), 415);
     }
 }

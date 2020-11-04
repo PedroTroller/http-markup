@@ -142,3 +142,12 @@ Feature: Parse markup file and transform them
       | mime type             |
       | text/rst              |
       | text/restructuredtext |
+
+  Scenario: Push an unsupported media type
+    When I send a markup file with content type "application/json" containing
+    """
+    {
+        "foo": "bar"
+    }
+    """
+    Then I should get an unexpected media type http response

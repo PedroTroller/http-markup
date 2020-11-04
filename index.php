@@ -44,21 +44,69 @@ $getExtensionFromRequest = function (Request $request): string {
     return $formats[$type];
 };
 
+$markupToHtml = function (string $markup, string $extension): string {
+    $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $extension);
+    $process = new Process(
+        [
+            'github-markup',
+            $temporaryFile,
+        ]
+    );
+
+    file_put_contents($temporaryFile, $markup);
+    $process->run();
+    unlink($temporaryFile);
+
+    if ($process->isSuccessful()) {
+        return $process->getOutput();
+    }
+
+    throw new Exception($process->getErrorOutput());
+};
+
+$prettier = function (string $html): string {
+    $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), 'html');
+    $process = new Process(
+        [
+            'prettier',
+            '--write',
+            '--ignore-unknown',
+            '--parser',
+            'html',
+            '--tab-width',
+            2,
+            '--print-width',
+            1000,
+            $temporaryFile,
+        ]
+    );
+
+    file_put_contents($temporaryFile, $html);
+    $process->run();
+    $html = (string) file_get_contents($temporaryFile);
+    unlink($temporaryFile);
+
+    if ($process->isSuccessful()) {
+        return $html;
+    }
+
+    throw new Exception($process->getErrorOutput());
+};
+
 $app = new \Slim\App();
 
-$app->post('/', function (Request $request, Response $response, array $args) use ($getExtensionFromRequest): void {
-    $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $getExtensionFromRequest($request));
-    $input = (string) $request->getBody();
+$app->post('/', function (Request $request, Response $response, array $args) use ($getExtensionFromRequest, $markupToHtml, $prettier): void {
+    $extension = $getExtensionFromRequest($request);
+    $markup = (string) $request->getBody();
 
-    file_put_contents($temporaryFile, $input);
-
-    $process = new Process(['github-markup', $temporaryFile]);
-
-    $process->run(function (string $type, string $message) use ($response): void {
-        $response->getBody()->write($message);
-    });
-
-    $response->withStatus($process->isSuccessful() ? 200 : 500);
+    try {
+        $html = $markupToHtml($markup, $extension);
+        $html = $prettier($html);
+        $response->getBody()->write($html);
+        $response->withStatus(200);
+    } catch (Exception $exception) {
+        $response->withStatus(500);
+    }
 });
 
 $app->get('/_ping', function (Request $request, Response $response, array $args): void {

@@ -65,24 +65,16 @@ final class FeatureContext implements Context
 
         try {
             Assert::eq(
-                $this->cleanupHtml((string) $this->response->getBody()),
-                $this->cleanupHtml((string) $html)
+                (string) $this->response->getBody(),
+                (string) $html,
             );
         } catch (InvalidArgumentException $exception) {
             echo (new Differ())->diff(
-                $this->cleanupHtml((string) $html),
-                $this->cleanupHtml((string) $this->response->getBody())
+                (string) $html,
+                (string) $this->response->getBody(),
             );
 
             throw $exception;
         }
-    }
-
-    private function cleanupHtml(string $html): string
-    {
-        $html = str_replace("\t", '', $html);
-        $html = trim($html, " \n");
-
-        return $html;
     }
 }

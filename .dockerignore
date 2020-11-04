@@ -1,3 +1,7 @@
-vendor
-Dockerfile
-.*
+*
+
+!/Gemfile*
+!/composer*
+!/features/
+!/index.php
+!/package*

@@ -3,4 +3,4 @@ default:
         default:
             contexts:
                 - FeatureContext:
-                    host: "http://localhost/"
+                    host: "http://prod/"

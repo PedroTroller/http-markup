@@ -30,19 +30,19 @@ RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     locale -a
 
 ENV LANG=en_US.UTF-8
-ENV PATH /var/www/html/node_modules/.bin:$PATH
+ENV PATH /var/www/node_modules/.bin:$PATH
 
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-COPY Gemfile* /var/www/html/
-COPY composer.* /var/www/html/
-COPY package* /var/www/html/
+COPY Gemfile* /var/www/
+COPY composer.* /var/www/
+COPY package* /var/www/
 
 RUN bundler install  --jobs $(($(nproc) * 2)) \
  && composer install --no-scripts --no-dev \
  && npm install
 
-COPY . /var/www/html
+COPY . /var/www
 
 ########################################
 

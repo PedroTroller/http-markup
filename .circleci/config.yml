@@ -23,7 +23,7 @@ jobs:
           docker-compose exec dev composer install
           docker-compose exec dev vendor/bin/behat
 
-  release-test:
+  release-pr:
     machine:
       docker_layer_caching: false
     steps:
@@ -43,7 +43,30 @@ jobs:
           npm install
           node_modules/.bin/semantic-release --dry-run
 
-  release:
+  release-beta:
+    machine:
+      docker_layer_caching: false
+    steps:
+      - run: |
+          echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
+          echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
+      - checkout
+      - docker/install-docker
+      - docker/install-docker-compose
+      - docker/check
+      - run: |
+          git fetch --all
+          git rebase origin main
+      - run: |
+          docker-compose pull prod
+          docker-compose build prod
+          docker-compose up --detach prod
+      - run: |
+          nvm install 15.0.1
+          npm install
+          node_modules/.bin/semantic-release --ci false
+
+  release-main:
     machine:
       docker_layer_caching: false
     steps:
@@ -61,7 +84,7 @@ jobs:
       - run: |
           nvm install 15.0.1
           npm install
-          node_modules/.bin/semantic-release --ci false
+          node_modules/.bin/semantic-release
 
 
 workflows:
@@ -69,13 +92,25 @@ workflows:
   workflow:
     jobs:
       - tests
-      - release-test
-      - release:
+      - release-pr:
           requires:
             - tests
-            - release-test
+          filters:
+            branches:
+              ignore:
+                - main
+                - beta
+      - release-beta:
+          requires:
+            - tests
+          filters:
+            branches:
+              only:
+                - beta
+      - release-main:
+          requires:
+            - tests
           filters:
             branches:
               only:
                 - main
-                - beta

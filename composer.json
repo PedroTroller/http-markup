@@ -6,7 +6,7 @@
     },
     "require-dev": {
         "behat/behat": "^3.5",
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^7.2",
         "pedrotroller/php-cs-custom-fixer": "^2.15",
         "sebastian/diff": "^3.0",
         "webmozart/assert": "^1.3"

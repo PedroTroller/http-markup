@@ -1,6 +1,7 @@
 {
     "name": "pedrotroller/http-markup",
     "require": {
+        "react/promise": "^2.8",
         "slim/slim": "^3.11",
         "symfony/process": "^5.1"
     },

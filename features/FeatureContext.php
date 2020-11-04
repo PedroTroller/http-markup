@@ -2,23 +2,21 @@
 
 declare(strict_types=1);
 
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Psr\Http\Message\ResponseInterface;
 use SebastianBergmann\Diff\Differ;
 use Webmozart\Assert\Assert;
 
 final class FeatureContext implements Context
 {
-    /**
-     * @var Client
-     */
-    private $client;
+    private Client $client;
 
-    /**
-     * @var \GuzzleHttp\Psr7\Response|null
-     */
-    private $response;
+    private ?ResponseInterface $response;
 
     public function __construct(string $host)
     {
@@ -38,6 +36,7 @@ final class FeatureContext implements Context
      */
     public function iSendAMarkupFileWithContentTypeContaining(string $mimeType, PyStringNode $body): void
     {
+        try {
         $this->response = $this->client->request(
             'POST',
             '/',
@@ -50,6 +49,9 @@ final class FeatureContext implements Context
                 'body' => (string) $body,
             ]
         );
+        } catch (RequestException $requestException) {
+            $this->response = $requestException->getResponse();
+        }
     }
 
     /**
@@ -65,24 +67,28 @@ final class FeatureContext implements Context
 
         try {
             Assert::eq(
-                $this->cleanupHtml((string) $this->response->getBody()),
-                $this->cleanupHtml((string) $html)
+                (string) $this->response->getBody(),
+                (string) $html,
             );
         } catch (InvalidArgumentException $exception) {
             echo (new Differ())->diff(
-                $this->cleanupHtml((string) $html),
-                $this->cleanupHtml((string) $this->response->getBody())
+                (string) $html,
+                (string) $this->response->getBody(),
             );
 
             throw $exception;
         }
     }
 
-    private function cleanupHtml(string $html): string
+    /**
+     * @Then I should get an unexpected media type http response
+     */
+    public function iShouldGetAnUnexpectedMediaTypeHttpResponse(): void
     {
-        $html = str_replace("\t", '', $html);
-        $html = trim($html, " \n");
+        if (null === $this->response) {
+            throw new Exception('No request sent.');
+        }
 
-        return $html;
+        Assert::eq($this->response->getStatusCode(), 415);
     }
 }

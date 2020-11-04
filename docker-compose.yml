@@ -14,3 +14,5 @@ services:
       target: dev
     volumes:
       - '.:/var/www/html/'
+    depends_on:
+      - prod

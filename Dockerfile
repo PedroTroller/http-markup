@@ -4,43 +4,49 @@ FROM composer:2.0.4 as composer
 
 FROM php:7.4.12-apache AS prod
 
-RUN apt-get update \
+RUN (curl -sL https://deb.nodesource.com/setup_14.x | bash) \
+ && apt-get update \
  && apt-get install -y --no-install-recommends \
         git \
         libghc-gnuidn-dev \
+        locales \
+        nodejs \
         perl \
         python \
         python-pip \
         ruby-dev \
         unzip \
-        locales \
         zlib1g-dev \
+ && pip install docutils==0.14 \
+ && gem install bundler \
  && rm -rf /var/lib/apt/lists/*
+
+RUN bundle config set no-cache 'true'
+
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     locale-gen && \
     locale -a
 
 ENV LANG=en_US.UTF-8
+ENV PATH /var/www/node_modules/.bin:$PATH
 
-RUN pip install docutils==0.14
+WORKDIR /var/www
 
-RUN gem install bundler
+COPY Gemfile* /var/www/
+COPY composer.* /var/www/
+COPY package* /var/www/
 
-COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN bundler install  --jobs $(($(nproc) * 2)) \
+ && composer install --no-scripts --no-dev \
+ && npm install
 
-WORKDIR /var/www/html
-
-COPY composer.* /var/www/html/
-RUN composer install --no-scripts --no-dev
-
-COPY Gemfile* /var/www/html/
-RUN bundler install
-
-COPY . /var/www/html
+COPY . /var/www
 
 ########################################
 
 FROM prod AS dev
 
-RUN composer install --no-scripts --no-dev
+RUN composer install --no-scripts \
+ && npm install --dev

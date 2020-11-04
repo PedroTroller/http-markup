@@ -25,6 +25,7 @@ Feature: Parse markup file and transform them
         }
     }
     </code></pre>
+
     """
 
   Scenario Outline: Parse textile format
@@ -43,12 +44,16 @@ Feature: Parse markup file and transform them
     """
     <h2>Textile</h2>
     <ul>
-    <li>is a <em>shorthand syntax</em> used to generate valid <span class="caps">HTML</span>,</li>
-    <li>is <strong>easy</strong> to read and <strong>easy</strong> to write,</li>
-    <li>can generate complex pages,</li>
-    <li>including headers, quotes, lists, tables, and figures.</li>
+      <li>is a <em>shorthand syntax</em> used to generate valid <span class="caps">HTML</span>,</li>
+      <li>is <strong>easy</strong> to read and <strong>easy</strong> to write,</li>
+      <li>can generate complex pages,</li>
+      <li>including headers, quotes, lists, tables, and figures.</li>
     </ul>
-    <p style="font-size:0.8em;"><strong>TxStyle</strong> is a documentation project of Textile for <a href="http://textpattern.com">Textpattern <span class="caps">CMS</span></a>.</p>
+    <p style="font-size: 0.8em">
+      <strong>TxStyle</strong> is a documentation project of Textile for <a href="http://textpattern.com">Textpattern <span class="caps">CMS</span></a
+      >.
+    </p>
+    
     """
 
     Examples:
@@ -74,9 +79,8 @@ Feature: Parse markup file and transform them
     """
     Then I should get the following html
     """
+    <p># Foo. # # @example # # y # g # # @param [String] param_name The xx and xx. # # @see <a href="http://url.com">url.com</a> # # @return [true] if so</p>
 
-    <p># Foo. # # @example # #   y #   g # # @param [String] param_name The xx and
-    xx. # # @see <a href="http://url.com">url.com</a> # # @return [true] if so</p>
     """
 
   Scenario Outline: Parse org mode format
@@ -93,6 +97,7 @@ Feature: Parse markup file and transform them
     <h1>Test Agenda</h1>
     <p>&lt;2017-03-10 Fri&gt;</p>
     <h1>test agenda</h1>
+
     """
 
     Examples:
@@ -120,19 +125,29 @@ Feature: Parse markup file and transform them
     """
     <p>To localize a postal address, a minimum set of properties are required :</p>
     <blockquote>
-    <ul class="simple">
-    <li><code>streetAddress</code></li>
-    <li><code>addressLocality</code></li>
-    <li><code>postalCode</code></li>
-    <li><code>addressCountry</code></li>
-    </ul>
+      <ul class="simple">
+        <li><code>streetAddress</code></li>
+        <li><code>addressLocality</code></li>
+        <li><code>postalCode</code></li>
+        <li><code>addressCountry</code></li>
+      </ul>
     </blockquote>
     <p>If at least one of these properties is not available, then the <code>address</code> attribute is mandatory.</p>
     <p>Without this kind of informations, then a <code>PostalAddress</code> is useless.</p>
     <p>The <code>name</code> property of a <code>PostalAddress</code> is optionnal.</p>
+
     """
 
     Examples:
       | mime type             |
       | text/rst              |
       | text/restructuredtext |
+
+  Scenario: Push an unsupported media type
+    When I send a markup file with content type "application/json" containing
+    """
+    {
+        "foo": "bar"
+    }
+    """
+    Then I should get an unexpected media type http response

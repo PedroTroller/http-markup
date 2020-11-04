@@ -61,7 +61,7 @@ jobs:
       - run: |
           nvm install 15.0.1
           npm install
-          node_modules/.bin/semantic-release
+          node_modules/.bin/semantic-release --ci false
 
 
 workflows:

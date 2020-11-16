@@ -2,7 +2,7 @@
     "name": "pedrotroller/http-markup",
     "require": {
         "react/promise": "^2.8",
-        "slim/slim": "^3.11",
+        "slim/slim": "^4.6",
         "symfony/process": "^5.1"
     },
     "require-dev": {

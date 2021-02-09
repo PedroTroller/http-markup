@@ -4,7 +4,7 @@
   },
   "devDependencies": {
     "conventional-changelog-conventionalcommits": "^4.4.0",
-    "semantic-release": "^17.2.2",
+    "semantic-release": "^17.3.8",
     "semantic-release-docker": "^2.2.0"
   }
 }

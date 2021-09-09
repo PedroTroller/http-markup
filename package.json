@@ -3,7 +3,7 @@
     "prettier": "^2.3.2"
   },
   "devDependencies": {
-    "conventional-changelog-conventionalcommits": "^4.4.0",
+    "conventional-changelog-conventionalcommits": "^4.6.0",
     "semantic-release": "^17.4.7",
     "semantic-release-docker": "^2.2.0"
   }

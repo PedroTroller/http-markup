@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem "github-markup", "3.0.4"
 gem "RedCloth", "=4.3.2"
-gem "asciidoctor", "2.0.11"
+gem "asciidoctor", "2.0.16"
 gem "commonmarker", "=0.21.0"
 gem "creole", "=0.5.0"
 gem "org-ruby", "=0.9.12"

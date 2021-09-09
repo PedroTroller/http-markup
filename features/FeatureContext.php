@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Assert\InvalidArgumentException;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
@@ -10,7 +11,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Psr\Http\Message\ResponseInterface;
 use SebastianBergmann\Diff\Differ;
-use Webmozart\Assert\Assert;
+use Assert\Assert;
 
 final class FeatureContext implements Context
 {
@@ -63,13 +64,11 @@ final class FeatureContext implements Context
             throw new Exception('No request sent.');
         }
 
-        Assert::eq($this->response->getStatusCode(), 200);
-
         try {
-            Assert::eq(
-                (string) $this->response->getBody(),
-                (string) $html,
-            );
+            Assert::that($this->response->getStatusCode())
+                ->eq(200);
+            Assert::that((string) $this->response->getBody())
+                ->eq($html);
         } catch (InvalidArgumentException $exception) {
             echo (new Differ())->diff(
                 (string) $html,
@@ -89,6 +88,7 @@ final class FeatureContext implements Context
             throw new Exception('No request sent.');
         }
 
-        Assert::eq($this->response->getStatusCode(), 415);
+        Assert::that($this->response->getStatusCode())
+            ->eq(415);
     }
 }

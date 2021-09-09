@@ -12,11 +12,14 @@ RUN (curl -sL https://deb.nodesource.com/setup_16.x | bash) \
         locales \
         nodejs \
         perl \
+        python \
+        python-pip \
         python3 \
         python3-pip \
         ruby-full \
         unzip \
         zlib1g-dev \
+ && pip install docutils==0.14 \
  && pip3 install docutils==0.14 \
  && gem install bundler \
  && rm -rf /var/lib/apt/lists/* \

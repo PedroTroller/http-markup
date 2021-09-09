@@ -4,7 +4,7 @@ FROM composer:2.1.3 as composer
 
 FROM php:7.4.12-apache AS prod
 
-RUN (curl -sL https://deb.nodesource.com/setup_14.x | bash) \
+RUN (curl -sL https://deb.nodesource.com/setup_16.x | bash) \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
         git \
@@ -12,14 +12,16 @@ RUN (curl -sL https://deb.nodesource.com/setup_14.x | bash) \
         locales \
         nodejs \
         perl \
-        python \
-        python-pip \
-        ruby-dev \
+        python3 \
+        python3-pip \
+        ruby-full \
         unzip \
         zlib1g-dev \
- && pip install docutils==0.14 \
+ && pip3 install docutils==0.14 \
  && gem install bundler \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && python3 --version \
+ && ruby --version
 
 RUN bundle config set no-cache 'true'
 

@@ -2,7 +2,7 @@ FROM composer:2.1.3 as composer
 
 ########################################
 
-FROM php:7.4.12-apache AS prod
+FROM php:8.1.4-apache AS prod
 
 RUN (curl -sL https://deb.nodesource.com/setup_16.x | bash) \
  && apt-get update \

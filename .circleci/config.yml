@@ -13,8 +13,6 @@ jobs:
       docker_layer_caching: false
     steps:
       - checkout
-      - docker/install-docker
-      - docker/install-docker-compose
       - run: |
           docker-compose pull dev
           docker-compose build dev
@@ -31,8 +29,6 @@ jobs:
           echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
           echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
       - checkout
-      - docker/install-docker
-      - docker/install-docker-compose
       - docker/check
       - run: |
           docker-compose pull prod
@@ -51,8 +47,6 @@ jobs:
           echo 'export NVM_DIR="/opt/circleci/.nvm"' >> $BASH_ENV
           echo ' [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $BASH_ENV
       - checkout
-      - docker/install-docker
-      - docker/install-docker-compose
       - docker/check
       - run: |
           docker-compose pull prod

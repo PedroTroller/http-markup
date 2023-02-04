@@ -35,7 +35,7 @@ jobs:
           docker-compose build prod
           docker-compose up --detach prod
       - run: |
-          nvm install 15.0.1
+          nvm install 19.6.0
           npm install
           node_modules/.bin/semantic-release --dry-run
 
@@ -53,7 +53,7 @@ jobs:
           docker-compose build prod
           docker-compose up --detach prod
       - run: |
-          nvm install 15.0.1
+          nvm install 19.6.0
           npm install
           node_modules/.bin/semantic-release --ci false
 

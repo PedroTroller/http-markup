@@ -7,18 +7,18 @@ FROM php:8.2.2-apache AS prod
 RUN (curl -sL https://deb.nodesource.com/setup_19.x | bash) \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
-        git=1:2.20.1-2+deb10u7 \
-        libghc-gnuidn-dev=0.2.2-7+b1 \
-        locales=2.28-10+deb10u2 \
-        nodejs=19.6.0-deb-1nodesource1 \
-        perl=5.28.1-6+deb10u1 \
-        python3=3.7.3-1 \
-        python3-pip=18.1-5 \
-        ruby-full=1:2.5.1 \
-        unzip=6.0-23+deb10u3 \
-        zlib1g-dev=1:1.2.11.dfsg-1+deb10u2 \
- && pip3 install docutils==0.14 \
- && gem install bundler -v 2.3.26 \
+        git \
+        locales \
+        libidn11-dev \
+        nodejs \
+        perl \
+        python3 \
+        python3-pip \
+        ruby-full \
+        unzip \
+        zlib1g-dev \
+ && pip3 install docutils==0.19 \
+ && gem install bundler -v 2.4.6 \
  && rm -rf /var/lib/apt/lists/* \
  && python3 --version \
  && ruby --version \

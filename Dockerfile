@@ -4,13 +4,13 @@ FROM composer:2.1.3 as composer
 
 FROM php:7.4.12-apache AS prod
 
-RUN (curl -sL https://deb.nodesource.com/setup_16.x | bash) \
+RUN (curl -sL https://deb.nodesource.com/setup_19.x | bash) \
  && apt-get update \
  && apt-get install -y --no-install-recommends \
         git=1:2.20.1-2+deb10u7 \
         libghc-gnuidn-dev=0.2.2-7+b1 \
         locales=2.28-10+deb10u2 \
-        nodejs=16.19.0-deb-1nodesource1 \
+        nodejs=19.6.0-deb-1nodesource1 \
         perl=5.28.1-6+deb10u1 \
         python3=3.7.3-1 \
         python3-pip=18.1-5 \

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem "github-markup", "4.0.0"
+gem "github-markup", "4.0.1"
 gem "RedCloth", "=4.3.2"
 gem "asciidoctor", "2.0.16"
 gem "commonmarker", "=0.21.0"

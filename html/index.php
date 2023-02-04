@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Symfony\Component\Process\Process;
-use Slim\App;
 use React\Promise\Deferred;
-use React\Promise\Promise;
+use Slim\Factory\AppFactory;
+use Symfony\Component\Process\Process;
 
 require_once dirname(__DIR__).'/vendor/autoload.php';
 
-$app = new App();
+$app = AppFactory::create();
 
 $app->post('/', function (Request $request, Response $response, array $args): Response {
     $result = [
         'status' => 502,
-        'body' => '',
+        'body'   => '',
     ];
 
     $deferred = new Deferred();
-    $promise = $deferred->promise();
+    $promise  = $deferred->promise();
 
     $promise
         ->then(function (Request $request): array {
             $type = $request->getHeader('Content-Type');
 
             if (empty($type)) {
-                throw new Exception('No Content-Type provided', 415);
+                throw new Exception('No Content-Type provided.', 415);
             }
 
             if (is_array($type)) {
@@ -49,18 +48,15 @@ $app->post('/', function (Request $request, Response $response, array $args): Re
             ];
 
             if (false === array_key_exists($type, $formats)) {
-                throw new Exception(
-                    sprintf('Unsupported Content-Type. Only %s supported', implode(', ', array_keys($formats))),
-                    415,
-                );
+                throw new Exception(sprintf('Unsupported Content-Type. Only %s supported.', implode(', ', array_keys($formats))), 415);
             }
 
             return [$formats[$type], (string) $request->getBody()];
         })
         ->then(function (array $data): string {
             [$extension, $markup] = $data;
-            $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $extension);
-            $process = new Process(
+            $temporaryFile        = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), $extension);
+            $process              = new Process(
                 [
                     'github-markup',
                     $temporaryFile,
@@ -79,7 +75,7 @@ $app->post('/', function (Request $request, Response $response, array $args): Re
         })
         ->then(function (string $html): string {
             $temporaryFile = sprintf('%s/%s.%s', sys_get_temp_dir(), uniqid(), 'html');
-            $process = new Process(
+            $process       = new Process(
                 [
                     'prettier',
                     '--write',
@@ -105,13 +101,13 @@ $app->post('/', function (Request $request, Response $response, array $args): Re
 
             throw new Exception($process->getErrorOutput());
         })
-        ->otherwise(function (Exception $exception) use (&$result) {
+        ->otherwise(function (Exception $exception) use (&$result): void {
             $result['status'] = $exception->getCode() ?: 500;
-            $result['body'] = $exception->getMessage();
+            $result['body']   = $exception->getMessage();
         })
         ->then(function (string $html) use (&$result): void {
             $result['status'] = 200;
-            $result['body'] = $html;
+            $result['body']   = $html;
         })
     ;
 
@@ -123,7 +119,7 @@ $app->post('/', function (Request $request, Response $response, array $args): Re
 });
 
 $app->get('/_ping', function (Request $request, Response $response, array $args): Response {
-      return $response->withStatus(200);
+    return $response->withStatus(200);
 });
 
 $app->run();

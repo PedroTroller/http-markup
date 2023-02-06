@@ -5,7 +5,8 @@ declare(strict_types=1);
 use PedroTroller\CS\Fixer\Fixers;
 use PedroTroller\CS\Fixer\RuleSetFactory;
 
-return PhpCsFixer\Config::create()
+$config = new PhpCsFixer\Config();
+$config
     ->setRiskyAllowed(true)
     ->setRules(RuleSetFactory::create()
         ->symfony(true)
@@ -27,7 +28,9 @@ return PhpCsFixer\Config::create()
     ->registerCustomFixers(new Fixers())
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->in(__DIR__ . '/html')
+            ->in(__DIR__.'/html')
             ->append([__FILE__])
     )
 ;
+
+return $config;

@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.6"
   },
   "devDependencies": {
     "conventional-changelog-conventionalcommits": "^5.0.0",
